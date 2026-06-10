@@ -4,106 +4,323 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Profile</title>
+<title>Character Archive</title>
 
 <link rel="stylesheet" href="style.css">
+
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<link rel="stylesheet" href="style.css">
-<link href="https:/..." rel="stylesheet">
 </head>
 
 <body>
-<div class="editor-column">
 
-<label>ARCHIVE TITLE</label>
-<input type="text" id="mainTitleInput">
-
-<label>SUB TITLE</label>
-<input type="text" id="subTitleInput">
-
-<label>DESCRIPTION</label>
-<textarea id="mainDescInput"></textarea>
-
-<label>PROJECT NUMBER</label>
-<input type="text" id="projectNumberInput">
-
-<label>PROJECT LABEL</label>
-<input type="text" id="projectLabelInput">
-
-<label>ARCHIVE LABEL</label>
-<input type="text" id="archiveLabelInput">
-
-<label>SUB DESCRIPTION</label>
-<input type="text" id="subDescInput">
-
-<label>PROJECT TEXT</label>
-<input type="text" id="projectTextInput">
-
+<div class="background">
+    <div class="blur blur1"></div>
+    <div class="blur blur2"></div>
 </div>
-<div class="cursor-glow"></div>
 
-<div class="bg-gradient one"></div>
-<div class="bg-gradient two"></div>
+<header class="toolbar">
 
+    <div class="toolbar-left">
 
-<div class="toolbar">
+        <button onclick="createCharacter()">
+            + 새 캐릭터
+        </button>
 
-<input type="color" id="themeColor" value="#8b5cf6">
+        <button onclick="saveArchive()">
+            저장
+        </button>
 
-<input type="file" id="imageUpload" accept="image/png,image/jpeg">
+        <button onclick="loadArchive()">
+            불러오기
+        </button>
 
-<button onclick="saveProfile()">
-저장
-</button>
+    </div>
 
-<button onclick="loadProfile()">
-불러오기
-</button>
+    <div class="toolbar-right">
 
-<button onclick="savePNG()">
-PNG 저장
-</button>
+        <input
+            type="color"
+            id="themePicker"
+            value="#d946ef">
 
-<button onclick="saveHTML()">
-HTML 저장
-</button>
+        <button onclick="savePNG()">
+            PNG 저장
+        </button>
+
+        <button onclick="saveHTML()">
+            HTML 저장
+        </button>
+
+    </div>
+
+</header>
 
 <input
 type="file"
-id="loadFile"
+id="archiveFile"
 accept=".json"
-style="display:none">
+hidden>
+
+<div class="layout">
+
+    <!-- 사이드바 -->
+
+    <aside class="sidebar">
+
+        <h2>CHARACTERS</h2>
+
+        <div id="characterList">
+        </div>
+
+    </aside>
+
+    <!-- 메인 -->
+
+    <main class="main">
+
+        <div
+        class="archive-card"
+        id="captureArea">
+
+            <!-- 프로필 헤더 -->
+
+            <section class="hero">
+
+                <label class="avatar-wrap">
+
+                    <input
+                    type="file"
+                    id="avatarInput"
+                    accept="image/*"
+                    hidden>
+
+                    <img
+                    id="avatar"
+                    class="avatar"
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800">
+
+                    <div class="avatar-overlay">
+                        이미지 변경
+                    </div>
+
+                </label>
+
+                <div class="hero-info">
+
+                    <h1
+                    id="charName"
+                    contenteditable="true">
+                    캐릭터 이름
+                    </h1>
+
+                    <div
+                    id="charTitle"
+                    class="subtitle"
+                    contenteditable="true">
+                    별칭 / 직업
+                    </div>
+
+                    <div class="tag-editor">
+
+                        <input
+                        id="tagInput"
+                        placeholder="태그 입력">
+
+                        <button
+                        onclick="addTag()">
+                        추가
+                        </button>
+
+                    </div>
+
+                    <div
+                    id="tagList"
+                    class="tag-list">
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- 탭 -->
+
+            <div class="tabs">
+
+                <button
+                class="tab active"
+                data-tab="profile">
+                프로필
+                </button>
+
+                <button
+                class="tab"
+                data-tab="world">
+                세계관
+                </button>
+
+                <button
+                class="tab"
+                data-tab="relations">
+                관계도
+                </button>
+
+                <button
+                class="tab"
+                data-tab="gallery">
+                갤러리
+                </button>
+
+                <button
+                class="tab"
+                data-tab="docs">
+                설정 문서
+                </button>
+
+            </div>
+
+            <!-- 프로필 탭 -->
+
+            <section
+            class="tab-content active"
+            id="profile">
+
+                <div class="info-grid">
+
+                    <div class="field">
+                        <label>나이</label>
+                        <div
+                        id="age"
+                        contenteditable="true">
+                        18
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>종족</label>
+                        <div
+                        id="race"
+                        contenteditable="true">
+                        인간
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>생일</label>
+                        <div
+                        id="birthday"
+                        contenteditable="true">
+                        01.01
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>키</label>
+                        <div
+                        id="height"
+                        contenteditable="true">
+                        170cm
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>체중</label>
+                        <div
+                        id="weight"
+                        contenteditable="true">
+                        55kg
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>직업</label>
+                        <div
+                        id="job"
+                        contenteditable="true">
+                        마법사
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- 세계관 -->
+
+            <section
+            class="tab-content"
+            id="world">
+
+                <textarea
+                id="worldText"
+                placeholder="세계관 설명">
+                </textarea>
+
+            </section>
+
+            <!-- 관계도 -->
+
+            <section
+            class="tab-content"
+            id="relations">
+
+                <div class="relation-toolbar">
+
+                    <button
+                    onclick="addRelation()">
+                    관계 추가
+                    </button>
+
+                </div>
+
+                <div
+                id="relationList">
+                </div>
+
+            </section>
+
+            <!-- 갤러리 -->
+
+            <section
+            class="tab-content"
+            id="gallery">
+
+                <div class="gallery-toolbar">
+
+                    <input
+                    type="file"
+                    id="galleryUpload"
+                    accept="image/*"
+                    multiple>
+
+                </div>
+
+                <div
+                id="galleryGrid"
+                class="gallery-grid">
+                </div>
+
+            </section>
+
+            <!-- 설정 문서 -->
+
+            <section
+            class="tab-content"
+            id="docs">
+
+                <textarea
+                id="docsText"
+                placeholder="설정 문서 작성">
+                </textarea>
+
+            </section>
+
+        </div>
+
+    </main>
 
 </div>
 
-<div id="card" class="card">
-
-<img
-id="avatar"
-src="default.png"
-class="avatar">
-
-<h1
-contenteditable="true"
-id="name">
-캐릭터 이름
-</h1>
-
-<p
-contenteditable="true"
-id="title">
-직업 / 종족
-</p>
-
-<div
-contenteditable="true"
-id="description">
-
-캐릭터 소개를 입력하세요.
-
-</div>
-
-</div>
+<script src="script.js"></script>
 
 </body>
 </html>
