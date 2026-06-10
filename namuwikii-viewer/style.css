@@ -1,490 +1,744 @@
-@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap');
+let archive = {
+    characters:[]
+};
 
-:root{
-    --accent:#d946ef;
-    --bg:#0f1020;
-    --card:rgba(255,255,255,.08);
-    --border:rgba(255,255,255,.15);
-    --text:#ffffff;
+let currentCharacter = null;
+
+/* ---------------- */
+/* 기본 캐릭터 생성 */
+/* ---------------- */
+
+function defaultCharacter(){
+
+    return {
+
+        id:Date.now(),
+
+        name:"새 캐릭터",
+
+        title:"별칭",
+
+        avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800",
+
+        age:"",
+        race:"",
+        birthday:"",
+        height:"",
+        weight:"",
+        job:"",
+
+        world:"",
+
+        docs:"",
+
+        tags:[],
+
+        relations:[],
+
+        gallery:[]
+    };
 }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+/* ---------------- */
+/* 초기화 */
+/* ---------------- */
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+    createCharacter();
+
+    setupTabs();
+
+    setupTheme();
+
+    setupAvatarUpload();
+
+    setupGalleryUpload();
+
+});
+
+/* ---------------- */
+/* 캐릭터 생성 */
+/* ---------------- */
+
+function createCharacter(){
+
+    const char = defaultCharacter();
+
+    archive.characters.push(char);
+
+    currentCharacter = char;
+
+    renderCharacterList();
+
+    loadCharacter(char);
 }
 
-body{
-    font-family:'Pretendard',sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-    overflow-x:hidden;
-}
-
-/* 배경 */
-
-.background{
-    position:fixed;
-    inset:0;
-    z-index:-1;
-}
-
-.blur{
-    position:absolute;
-    width:600px;
-    height:600px;
-    border-radius:50%;
-    filter:blur(150px);
-}
-
-.blur1{
-    background:#9333ea;
-    top:-150px;
-    left:-150px;
-    opacity:.5;
-}
-
-.blur2{
-    background:#ec4899;
-    right:-150px;
-    bottom:-150px;
-    opacity:.45;
-}
-
-/* 툴바 */
-
-.toolbar{
-    position:sticky;
-    top:0;
-    z-index:100;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:15px 30px;
-
-    backdrop-filter:blur(25px);
-    background:rgba(0,0,0,.2);
-
-    border-bottom:
-    1px solid rgba(255,255,255,.08);
-}
-
-.toolbar-left,
-.toolbar-right{
-    display:flex;
-    gap:10px;
-    align-items:center;
-}
-
-button{
-    border:none;
-    cursor:pointer;
-
-    padding:11px 16px;
-
-    border-radius:12px;
-
-    background:var(--accent);
-    color:white;
-
-    font-weight:600;
-
-    transition:.25s;
-}
-
-button:hover{
-    transform:translateY(-2px);
-}
-
-input[type="color"]{
-    width:50px;
-    height:40px;
-
-    border:none;
-    border-radius:10px;
-
-    overflow:hidden;
-    background:none;
-}
-
-/* 레이아웃 */
-
-.layout{
-    display:flex;
-    gap:25px;
-    padding:30px;
-}
-
+/* ---------------- */
 /* 사이드바 */
+/* ---------------- */
 
-.sidebar{
-    width:260px;
+function renderCharacterList(){
 
-    padding:25px;
+    const list =
+    document.getElementById(
+    "characterList"
+    );
 
-    background:var(--card);
-    backdrop-filter:blur(30px);
+    list.innerHTML = "";
 
-    border:1px solid var(--border);
+    archive.characters.forEach(char=>{
 
-    border-radius:25px;
+        const item =
+        document.createElement("div");
 
-    height:calc(100vh - 110px);
+        item.className =
+        "character-item";
 
-    position:sticky;
-    top:90px;
+        if(
+            currentCharacter &&
+            currentCharacter.id===char.id
+        ){
+            item.classList.add("active");
+        }
+
+        item.textContent =
+        char.name;
+
+        item.onclick = ()=>{
+
+            saveCurrentCharacter();
+
+            currentCharacter = char;
+
+            loadCharacter(char);
+
+            renderCharacterList();
+        };
+
+        list.appendChild(item);
+
+    });
 }
 
-.sidebar h2{
-    margin-bottom:20px;
-    letter-spacing:2px;
+/* ---------------- */
+/* 캐릭터 불러오기 */
+/* ---------------- */
+
+function loadCharacter(char){
+
+    document.getElementById(
+    "charName"
+    ).innerText = char.name;
+
+    document.getElementById(
+    "charTitle"
+    ).innerText = char.title;
+
+    document.getElementById(
+    "avatar"
+    ).src = char.avatar;
+
+    document.getElementById(
+    "age"
+    ).innerText = char.age;
+
+    document.getElementById(
+    "race"
+    ).innerText = char.race;
+
+    document.getElementById(
+    "birthday"
+    ).innerText = char.birthday;
+
+    document.getElementById(
+    "height"
+    ).innerText = char.height;
+
+    document.getElementById(
+    "weight"
+    ).innerText = char.weight;
+
+    document.getElementById(
+    "job"
+    ).innerText = char.job;
+
+    document.getElementById(
+    "worldText"
+    ).value = char.world;
+
+    document.getElementById(
+    "docsText"
+    ).value = char.docs;
+
+    renderTags();
+
+    renderRelations();
+
+    renderGallery();
 }
 
-#characterList{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+/* ---------------- */
+/* 저장 */
+/* ---------------- */
+
+function saveCurrentCharacter(){
+
+    if(!currentCharacter) return;
+
+    currentCharacter.name =
+    document.getElementById(
+    "charName"
+    ).innerText;
+
+    currentCharacter.title =
+    document.getElementById(
+    "charTitle"
+    ).innerText;
+
+    currentCharacter.avatar =
+    document.getElementById(
+    "avatar"
+    ).src;
+
+    currentCharacter.age =
+    document.getElementById(
+    "age"
+    ).innerText;
+
+    currentCharacter.race =
+    document.getElementById(
+    "race"
+    ).innerText;
+
+    currentCharacter.birthday =
+    document.getElementById(
+    "birthday"
+    ).innerText;
+
+    currentCharacter.height =
+    document.getElementById(
+    "height"
+    ).innerText;
+
+    currentCharacter.weight =
+    document.getElementById(
+    "weight"
+    ).innerText;
+
+    currentCharacter.job =
+    document.getElementById(
+    "job"
+    ).innerText;
+
+    currentCharacter.world =
+    document.getElementById(
+    "worldText"
+    ).value;
+
+    currentCharacter.docs =
+    document.getElementById(
+    "docsText"
+    ).value;
+
+    renderCharacterList();
 }
 
-.character-item{
-    padding:14px;
-    border-radius:15px;
-
-    background:
-    rgba(255,255,255,.05);
-
-    cursor:pointer;
-
-    transition:.2s;
-}
-
-.character-item:hover{
-    background:
-    rgba(255,255,255,.12);
-}
-
-.character-item.active{
-    border:
-    2px solid var(--accent);
-}
-
-/* 메인 */
-
-.main{
-    flex:1;
-
-    display:flex;
-    justify-content:center;
-}
-
-.archive-card{
-
-    width:100%;
-    max-width:1000px;
-
-    padding:35px;
-
-    background:var(--card);
-
-    backdrop-filter:blur(30px);
-
-    border-radius:35px;
-
-    border:
-    1px solid var(--border);
-
-    box-shadow:
-    0 25px 80px rgba(0,0,0,.25);
-}
-
-/* 프로필 */
-
-.hero{
-    display:flex;
-    gap:30px;
-    align-items:center;
-    margin-bottom:35px;
-}
-
-.avatar-wrap{
-    position:relative;
-    cursor:pointer;
-}
-
-.avatar{
-    width:260px;
-    height:340px;
-
-    object-fit:cover;
-
-    border-radius:25px;
-
-    border:
-    4px solid var(--accent);
-
-    display:block;
-}
-
-.avatar-overlay{
-
-    position:absolute;
-    inset:0;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    background:
-    rgba(0,0,0,.6);
-
-    border-radius:25px;
-
-    opacity:0;
-
-    transition:.3s;
-}
-
-.avatar-wrap:hover
-.avatar-overlay{
-    opacity:1;
-}
-
-.hero-info{
-    flex:1;
-}
-
-.hero-info h1{
-    font-size:3rem;
-    font-weight:800;
-}
-
-.subtitle{
-    margin-top:10px;
-    color:var(--accent);
-    font-size:1.1rem;
-}
-
-/* 태그 */
-
-.tag-editor{
-    margin-top:20px;
-
-    display:flex;
-    gap:10px;
-}
-
-.tag-editor input{
-    flex:1;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:
-    rgba(255,255,255,.08);
-
-    color:white;
-}
-
-.tag-list{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-
-    margin-top:15px;
-}
-
-.tag{
-    background:var(--accent);
-
-    padding:8px 14px;
-
-    border-radius:999px;
-
-    font-size:.9rem;
-}
-
+/* ---------------- */
 /* 탭 */
+/* ---------------- */
 
-.tabs{
-    display:flex;
-    gap:10px;
+function setupTabs(){
 
-    margin-bottom:25px;
+    document
+    .querySelectorAll(".tab")
+    .forEach(tab=>{
 
-    flex-wrap:wrap;
+        tab.addEventListener(
+        "click",()=>{
+
+            document
+            .querySelectorAll(".tab")
+            .forEach(t=>
+                t.classList.remove("active")
+            );
+
+            document
+            .querySelectorAll(".tab-content")
+            .forEach(c=>
+                c.classList.remove("active")
+            );
+
+            tab.classList.add("active");
+
+            document
+            .getElementById(
+            tab.dataset.tab
+            )
+            .classList.add("active");
+
+        });
+
+    });
 }
 
-.tab{
-    background:
-    rgba(255,255,255,.08);
+/* ---------------- */
+/* 테마 */
+/* ---------------- */
+
+function setupTheme(){
+
+    const picker =
+    document.getElementById(
+    "themePicker"
+    );
+
+    picker.addEventListener(
+    "input",
+    e=>{
+
+        document.documentElement
+        .style.setProperty(
+        "--accent",
+        e.target.value
+        );
+
+    });
 }
 
-.tab.active{
-    background:var(--accent);
+/* ---------------- */
+/* 태그 */
+/* ---------------- */
+
+function addTag(){
+
+    const input =
+    document.getElementById(
+    "tagInput"
+    );
+
+    const value =
+    input.value.trim();
+
+    if(!value) return;
+
+    currentCharacter.tags.push(value);
+
+    input.value="";
+
+    renderTags();
 }
 
-.tab-content{
-    display:none;
+function renderTags(){
+
+    const area =
+    document.getElementById(
+    "tagList"
+    );
+
+    area.innerHTML="";
+
+    currentCharacter.tags.forEach(
+    (tag,index)=>{
+
+        const div =
+        document.createElement("div");
+
+        div.className="tag";
+
+        div.innerHTML=
+        `${tag} ✕`;
+
+        div.onclick=()=>{
+
+            currentCharacter.tags.splice(
+            index,
+            1
+            );
+
+            renderTags();
+        };
+
+        area.appendChild(div);
+
+    });
 }
 
-.tab-content.active{
-    display:block;
-}
-
-/* 프로필 정보 */
-
-.info-grid{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(220px,1fr));
-
-    gap:15px;
-}
-
-.field{
-
-    padding:18px;
-
-    border-radius:18px;
-
-    background:
-    rgba(255,255,255,.05);
-}
-
-.field label{
-    display:block;
-
-    margin-bottom:8px;
-
-    opacity:.7;
-}
-
-.field div{
-    min-height:28px;
-}
-
-/* textarea */
-
-textarea{
-
-    width:100%;
-    min-height:400px;
-
-    resize:vertical;
-
-    padding:20px;
-
-    border:none;
-
-    border-radius:20px;
-
-    background:
-    rgba(255,255,255,.06);
-
-    color:white;
-
-    font-size:15px;
-}
-
+/* ---------------- */
 /* 관계도 */
+/* ---------------- */
 
-.relation-toolbar{
-    margin-bottom:15px;
+function addRelation(){
+
+    currentCharacter.relations.push({
+
+        name:"",
+        type:"",
+        description:""
+
+    });
+
+    renderRelations();
 }
 
-.relation-card{
+function renderRelations(){
 
-    background:
-    rgba(255,255,255,.05);
+    const area =
+    document.getElementById(
+    "relationList"
+    );
 
-    border-radius:18px;
+    area.innerHTML="";
 
-    padding:18px;
+    currentCharacter.relations
+    .forEach((rel,index)=>{
 
-    margin-bottom:12px;
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "relation-card";
+
+        card.innerHTML=`
+
+        <input
+        placeholder="이름"
+        value="${rel.name}">
+
+        <input
+        placeholder="관계"
+        value="${rel.type}">
+
+        <input
+        placeholder="설명"
+        value="${rel.description}">
+
+        <button>
+        삭제
+        </button>
+
+        `;
+
+        const inputs =
+        card.querySelectorAll(
+        "input"
+        );
+
+        inputs[0].oninput=
+        e=>rel.name=
+        e.target.value;
+
+        inputs[1].oninput=
+        e=>rel.type=
+        e.target.value;
+
+        inputs[2].oninput=
+        e=>rel.description=
+        e.target.value;
+
+        card
+        .querySelector("button")
+        .onclick=()=>{
+
+            currentCharacter
+            .relations
+            .splice(index,1);
+
+            renderRelations();
+
+        };
+
+        area.appendChild(card);
+
+    });
 }
 
-.relation-card input{
+/* ---------------- */
+/* 아바타 */
+/* ---------------- */
 
-    width:100%;
+function setupAvatarUpload(){
 
-    margin-bottom:10px;
+    document
+    .querySelector(".avatar-wrap")
+    .addEventListener(
+    "click",
+    ()=>{
 
-    padding:10px;
+        document
+        .getElementById(
+        "avatarInput"
+        )
+        .click();
 
-    border:none;
+    });
 
-    border-radius:10px;
+    document
+    .getElementById(
+    "avatarInput"
+    )
+    .addEventListener(
+    "change",
+    e=>{
 
-    background:
-    rgba(255,255,255,.08);
+        const file =
+        e.target.files[0];
 
-    color:white;
+        if(!file) return;
+
+        const reader =
+        new FileReader();
+
+        reader.onload=
+        ev=>{
+
+            document
+            .getElementById(
+            "avatar"
+            )
+            .src=
+            ev.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
 }
 
+/* ---------------- */
 /* 갤러리 */
+/* ---------------- */
 
-.gallery-grid{
+function setupGalleryUpload(){
 
-    display:grid;
+    document
+    .getElementById(
+    "galleryUpload"
+    )
+    .addEventListener(
+    "change",
+    e=>{
 
-    grid-template-columns:
-    repeat(auto-fill,minmax(180px,1fr));
+        [...e.target.files]
+        .forEach(file=>{
 
-    gap:15px;
+            const reader =
+            new FileReader();
+
+            reader.onload=
+            ev=>{
+
+                currentCharacter
+                .gallery
+                .push(
+                ev.target.result
+                );
+
+                renderGallery();
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    });
 }
 
-.gallery-grid img{
+function renderGallery(){
 
-    width:100%;
-    height:220px;
+    const grid =
+    document.getElementById(
+    "galleryGrid"
+    );
 
-    object-fit:cover;
+    grid.innerHTML="";
 
-    border-radius:18px;
+    currentCharacter.gallery
+    .forEach((src,index)=>{
 
-    transition:.25s;
+        const img =
+        document.createElement("img");
+
+        img.src=src;
+
+        img.title=
+        "클릭하면 삭제";
+
+        img.onclick=()=>{
+
+            if(
+            confirm(
+            "삭제할까요?"
+            )
+            ){
+
+                currentCharacter
+                .gallery
+                .splice(
+                index,
+                1
+                );
+
+                renderGallery();
+            }
+        };
+
+        grid.appendChild(img);
+
+    });
 }
 
-.gallery-grid img:hover{
-    transform:scale(1.03);
+/* ---------------- */
+/* JSON 저장 */
+/* ---------------- */
+
+function saveArchive(){
+
+    saveCurrentCharacter();
+
+    const blob =
+    new Blob(
+
+    [
+        JSON.stringify(
+        archive,
+        null,
+        2
+        )
+    ],
+
+    {
+        type:
+        "application/json"
+    }
+
+    );
+
+    const a =
+    document.createElement("a");
+
+    a.href=
+    URL.createObjectURL(blob);
+
+    a.download=
+    "character-archive.json";
+
+    a.click();
 }
 
-/* 모바일 */
+/* ---------------- */
+/* JSON 불러오기 */
+/* ---------------- */
 
-@media(max-width:1000px){
+function loadArchive(){
 
-    .layout{
-        flex-direction:column;
+    document
+    .getElementById(
+    "archiveFile"
+    )
+    .click();
+}
+
+document
+.getElementById(
+"archiveFile"
+)
+?.addEventListener(
+"change",
+e=>{
+
+    const file =
+    e.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+    new FileReader();
+
+    reader.onload=
+    ev=>{
+
+        archive=
+        JSON.parse(
+        ev.target.result
+        );
+
+        currentCharacter=
+        archive.characters[0];
+
+        renderCharacterList();
+
+        loadCharacter(
+        currentCharacter
+        );
+    };
+
+    reader.readAsText(file);
+
+});
+
+/* ---------------- */
+/* PNG 저장 */
+/* ---------------- */
+
+function savePNG(){
+
+    saveCurrentCharacter();
+
+    html2canvas(
+    document.getElementById(
+    "captureArea"
+    ),
+    {
+        scale:2
+    }
+    )
+    .then(canvas=>{
+
+        const a =
+        document.createElement("a");
+
+        a.download =
+        `${currentCharacter.name}.png`;
+
+        a.href =
+        canvas.toDataURL();
+
+        a.click();
+
+    });
+}
+
+/* ---------------- */
+/* HTML 저장 */
+/* ---------------- */
+
+function saveHTML(){
+
+    const blob =
+    new Blob(
+
+    [
+    document
+    .documentElement
+    .outerHTML
+    ],
+
+    {
+        type:"text/html"
     }
 
-    .sidebar{
-        width:100%;
-        height:auto;
-        position:relative;
-        top:0;
-    }
+    );
 
-    .hero{
-        flex-direction:column;
-    }
+    const a =
+    document.createElement("a");
 
-    .avatar{
-        width:100%;
-        max-width:350px;
-        height:auto;
-    }
+    a.href=
+    URL.createObjectURL(blob);
 
-    .hero-info{
-        width:100%;
-        text-align:center;
-    }
+    a.download=
+    "archive.html";
+
+    a.click();
 }
