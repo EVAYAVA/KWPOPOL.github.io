@@ -1,69 +1,98 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>Portfolio</title>
 
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
+
 <body>
 
-<div class="container">
+<div class="cursor-glow"></div>
 
-    <div class="profile-card" id="captureArea">
+<div class="bg-gradient one"></div>
+<div class="bg-gradient two"></div>
 
-        <div class="top">
+<main id="captureArea">
 
-            <img
-                class="profile-img"
-                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43"
-                alt="profile">
+<section class="hero">
 
-            <div class="info">
+<div class="avatar">
+<img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43">
+</div>
 
-                <h1 class="name editable" contenteditable="true">
-                    홍길동
-                </h1>
+<div>
+<p class="tag">AVAILABLE FOR WORK</p>
 
-                <div class="job editable" contenteditable="true">
-                    Frontend Developer
-                </div>
+<h1 contenteditable="true">
+Creative<br>
+Developer
+</h1>
 
-                <p class="bio editable" contenteditable="true">
-                    자유롭게 수정 가능한 프로필 영역입니다.
-                </p>
+<p class="description" contenteditable="true">
+디자인과 개발을 연결하는
+디지털 크리에이터.
+</p>
+</div>
 
-            </div>
+</section>
 
-        </div>
+<section class="grid">
 
-        <div class="section">
-            <h2>Skills</h2>
+<div class="card large">
+<h2 contenteditable="true">About Me</h2>
 
-            <div class="skills">
-                <div class="skill">HTML</div>
-                <div class="skill">CSS</div>
-                <div class="skill">JavaScript</div>
-                <div class="skill">React</div>
-            </div>
-        </div>
+<p contenteditable="true">
+자기소개를 입력하세요.
+</p>
+</div>
 
-    </div>
+<div class="card">
+<h2>Skills</h2>
 
-    <div class="actions">
-        <button class="save-html" onclick="saveHTML()">
-            HTML 저장
-        </button>
+<ul contenteditable="true">
+<li>HTML</li>
+<li>CSS</li>
+<li>JavaScript</li>
+<li>React</li>
+</ul>
+</div>
 
-        <button class="save-screen" onclick="saveScreenshot()">
-            전체 화면 저장
-        </button>
-    </div>
+<div class="card">
+<h2>Contact</h2>
+
+<p contenteditable="true">
+hello@email.com
+</p>
+</div>
+
+<div class="card">
+<h2>Location</h2>
+
+<p contenteditable="true">
+Seoul, Korea
+</p>
+</div>
+
+</section>
+
+<div class="buttons">
+
+<button onclick="saveHTML()">
+Save HTML
+</button>
+
+<button onclick="saveScreen()">
+Save Screen
+</button>
 
 </div>
+
+</main>
 
 <script src="script.js"></script>
 
