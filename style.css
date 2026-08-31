@@ -1,0 +1,744 @@
+let archive = {
+    characters:[]
+};
+
+let currentCharacter = null;
+
+/* ---------------- */
+/* 기본 캐릭터 생성 */
+/* ---------------- */
+
+function defaultCharacter(){
+
+    return {
+
+        id:Date.now(),
+
+        name:"새 캐릭터",
+
+        title:"별칭",
+
+        avatar:"https://...",
+
+        age:"",
+        race:"",
+        birthday:"",
+        height:"",
+        weight:"",
+        job:"",
+
+        world:"",
+
+        docs:"",
+
+        tags:[],
+
+        relations:[],
+
+        gallery:[]
+    };
+}
+
+/* ---------------- */
+/* 초기화 */
+/* ---------------- */
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+    createCharacter();
+
+    setupTabs();
+
+    setupTheme();
+
+    setupAvatarUpload();
+
+    setupGalleryUpload();
+
+});
+
+/* ---------------- */
+/* 캐릭터 생성 */
+/* ---------------- */
+
+function createCharacter(){
+
+    const char = defaultCharacter();
+
+    archive.characters.push(char);
+
+    currentCharacter = char;
+
+    renderCharacterList();
+
+    loadCharacter(char);
+}
+
+/* ---------------- */
+/* 사이드바 */
+/* ---------------- */
+
+function renderCharacterList(){
+
+    const list =
+    document.getElementById(
+    "characterList"
+    );
+
+    list.innerHTML = "";
+
+    archive.characters.forEach(char=>{
+
+        const item =
+        document.createElement("div");
+
+        item.className =
+        "character-item";
+
+        if(
+            currentCharacter &&
+            currentCharacter.id===char.id
+        ){
+            item.classList.add("active");
+        }
+
+        item.textContent =
+        char.name;
+
+        item.onclick = ()=>{
+
+            saveCurrentCharacter();
+
+            currentCharacter = char;
+
+            loadCharacter(char);
+
+            renderCharacterList();
+        };
+
+        list.appendChild(item);
+
+    });
+}
+
+/* ---------------- */
+/* 캐릭터 불러오기 */
+/* ---------------- */
+
+function loadCharacter(char){
+
+    document.getElementById(
+    "charName"
+    ).innerText = char.name;
+
+    document.getElementById(
+    "charTitle"
+    ).innerText = char.title;
+
+    document.getElementById(
+    "avatar"
+    ).src = char.avatar;
+
+    document.getElementById(
+    "age"
+    ).innerText = char.age;
+
+    document.getElementById(
+    "race"
+    ).innerText = char.race;
+
+    document.getElementById(
+    "birthday"
+    ).innerText = char.birthday;
+
+    document.getElementById(
+    "height"
+    ).innerText = char.height;
+
+    document.getElementById(
+    "weight"
+    ).innerText = char.weight;
+
+    document.getElementById(
+    "job"
+    ).innerText = char.job;
+
+    document.getElementById(
+    "worldText"
+    ).value = char.world;
+
+    document.getElementById(
+    "docsText"
+    ).value = char.docs;
+
+    renderTags();
+
+    renderRelations();
+
+    renderGallery();
+}
+
+/* ---------------- */
+/* 저장 */
+/* ---------------- */
+
+function saveCurrentCharacter(){
+
+    if(!currentCharacter) return;
+
+    currentCharacter.name =
+    document.getElementById(
+    "charName"
+    ).innerText;
+
+    currentCharacter.title =
+    document.getElementById(
+    "charTitle"
+    ).innerText;
+
+    currentCharacter.avatar =
+    document.getElementById(
+    "avatar"
+    ).src;
+
+    currentCharacter.age =
+    document.getElementById(
+    "age"
+    ).innerText;
+
+    currentCharacter.race =
+    document.getElementById(
+    "race"
+    ).innerText;
+
+    currentCharacter.birthday =
+    document.getElementById(
+    "birthday"
+    ).innerText;
+
+    currentCharacter.height =
+    document.getElementById(
+    "height"
+    ).innerText;
+
+    currentCharacter.weight =
+    document.getElementById(
+    "weight"
+    ).innerText;
+
+    currentCharacter.job =
+    document.getElementById(
+    "job"
+    ).innerText;
+
+    currentCharacter.world =
+    document.getElementById(
+    "worldText"
+    ).value;
+
+    currentCharacter.docs =
+    document.getElementById(
+    "docsText"
+    ).value;
+
+    renderCharacterList();
+}
+
+/* ---------------- */
+/* 탭 */
+/* ---------------- */
+
+function setupTabs(){
+
+    document
+    .querySelectorAll(".tab")
+    .forEach(tab=>{
+
+        tab.addEventListener(
+        "click",()=>{
+
+            document
+            .querySelectorAll(".tab")
+            .forEach(t=>
+                t.classList.remove("active")
+            );
+
+            document
+            .querySelectorAll(".tab-content")
+            .forEach(c=>
+                c.classList.remove("active")
+            );
+
+            tab.classList.add("active");
+
+            document
+            .getElementById(
+            tab.dataset.tab
+            )
+            .classList.add("active");
+
+        });
+
+    });
+}
+
+/* ---------------- */
+/* 테마 */
+/* ---------------- */
+
+function setupTheme(){
+
+    const picker =
+    document.getElementById(
+    "themePicker"
+    );
+
+    picker.addEventListener(
+    "input",
+    e=>{
+
+        document.documentElement
+        .style.setProperty(
+        "--accent",
+        e.target.value
+        );
+
+    });
+}
+
+/* ---------------- */
+/* 태그 */
+/* ---------------- */
+
+function addTag(){
+
+    const input =
+    document.getElementById(
+    "tagInput"
+    );
+
+    const value =
+    input.value.trim();
+
+    if(!value) return;
+
+    currentCharacter.tags.push(value);
+
+    input.value="";
+
+    renderTags();
+}
+
+function renderTags(){
+
+    const area =
+    document.getElementById(
+    "tagList"
+    );
+
+    area.innerHTML="";
+
+    currentCharacter.tags.forEach(
+    (tag,index)=>{
+
+        const div =
+        document.createElement("div");
+
+        div.className="tag";
+
+        div.innerHTML=
+        `${tag} ✕`;
+
+        div.onclick=()=>{
+
+            currentCharacter.tags.splice(
+            index,
+            1
+            );
+
+            renderTags();
+        };
+
+        area.appendChild(div);
+
+    });
+}
+
+/* ---------------- */
+/* 관계도 */
+/* ---------------- */
+
+function addRelation(){
+
+    currentCharacter.relations.push({
+
+        name:"",
+        type:"",
+        description:""
+
+    });
+
+    renderRelations();
+}
+
+function renderRelations(){
+
+    const area =
+    document.getElementById(
+    "relationList"
+    );
+
+    area.innerHTML="";
+
+    currentCharacter.relations
+    .forEach((rel,index)=>{
+
+        const card =
+        document.createElement("div");
+
+        card.className =
+        "relation-card";
+
+        card.innerHTML=`
+
+        <input
+        placeholder="이름"
+        value="${rel.name}">
+
+        <input
+        placeholder="관계"
+        value="${rel.type}">
+
+        <input
+        placeholder="설명"
+        value="${rel.description}">
+
+        <button>
+        삭제
+        </button>
+
+        `;
+
+        const inputs =
+        card.querySelectorAll(
+        "input"
+        );
+
+        inputs[0].oninput=
+        e=>rel.name=
+        e.target.value;
+
+        inputs[1].oninput=
+        e=>rel.type=
+        e.target.value;
+
+        inputs[2].oninput=
+        e=>rel.description=
+        e.target.value;
+
+        card
+        .querySelector("button")
+        .onclick=()=>{
+
+            currentCharacter
+            .relations
+            .splice(index,1);
+
+            renderRelations();
+
+        };
+
+        area.appendChild(card);
+
+    });
+}
+
+/* ---------------- */
+/* 아바타 */
+/* ---------------- */
+
+function setupAvatarUpload(){
+
+    document
+    .querySelector(".avatar-wrap")
+    .addEventListener(
+    "click",
+    ()=>{
+
+        document
+        .getElementById(
+        "avatarInput"
+        )
+        .click();
+
+    });
+
+    document
+    .getElementById(
+    "avatarInput"
+    )
+    .addEventListener(
+    "change",
+    e=>{
+
+        const file =
+        e.target.files[0];
+
+        if(!file) return;
+
+        const reader =
+        new FileReader();
+
+        reader.onload=
+        ev=>{
+
+            document
+            .getElementById(
+            "avatar"
+            )
+            .src=
+            ev.target.result;
+
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+}
+
+/* ---------------- */
+/* 갤러리 */
+/* ---------------- */
+
+function setupGalleryUpload(){
+
+    document
+    .getElementById(
+    "galleryUpload"
+    )
+    .addEventListener(
+    "change",
+    e=>{
+
+        [...e.target.files]
+        .forEach(file=>{
+
+            const reader =
+            new FileReader();
+
+            reader.onload=
+            ev=>{
+
+                currentCharacter
+                .gallery
+                .push(
+                ev.target.result
+                );
+
+                renderGallery();
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    });
+}
+
+function renderGallery(){
+
+    const grid =
+    document.getElementById(
+    "galleryGrid"
+    );
+
+    grid.innerHTML="";
+
+    currentCharacter.gallery
+    .forEach((src,index)=>{
+
+        const img =
+        document.createElement("img");
+
+        img.src=src;
+
+        img.title=
+        "클릭하면 삭제";
+
+        img.onclick=()=>{
+
+            if(
+            confirm(
+            "삭제할까요?"
+            )
+            ){
+
+                currentCharacter
+                .gallery
+                .splice(
+                index,
+                1
+                );
+
+                renderGallery();
+            }
+        };
+
+        grid.appendChild(img);
+
+    });
+}
+
+/* ---------------- */
+/* JSON 저장 */
+/* ---------------- */
+
+function saveArchive(){
+
+    saveCurrentCharacter();
+
+    const blob =
+    new Blob(
+
+    [
+        JSON.stringify(
+        archive,
+        null,
+        2
+        )
+    ],
+
+    {
+        type:
+        "application/json"
+    }
+
+    );
+
+    const a =
+    document.createElement("a");
+
+    a.href=
+    URL.createObjectURL(blob);
+
+    a.download=
+    "character-archive.json";
+
+    a.click();
+}
+
+/* ---------------- */
+/* JSON 불러오기 */
+/* ---------------- */
+
+function loadArchive(){
+
+    document
+    .getElementById(
+    "archiveFile"
+    )
+    .click();
+}
+
+document
+.getElementById(
+"archiveFile"
+)
+?.addEventListener(
+"change",
+e=>{
+
+    const file =
+    e.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+    new FileReader();
+
+    reader.onload=
+    ev=>{
+
+        archive=
+        JSON.parse(
+        ev.target.result
+        );
+
+        currentCharacter=
+        archive.characters[0];
+
+        renderCharacterList();
+
+        loadCharacter(
+        currentCharacter
+        );
+    };
+
+    reader.readAsText(file);
+
+});
+
+/* ---------------- */
+/* PNG 저장 */
+/* ---------------- */
+
+function savePNG(){
+
+    saveCurrentCharacter();
+
+    html2canvas(
+    document.getElementById(
+    "captureArea"
+    ),
+    {
+        scale:2
+    }
+    )
+    .then(canvas=>{
+
+        const a =
+        document.createElement("a");
+
+        a.download =
+        `${currentCharacter.name}.png`;
+
+        a.href =
+        canvas.toDataURL();
+
+        a.click();
+
+    });
+}
+
+/* ---------------- */
+/* HTML 저장 */
+/* ---------------- */
+
+function saveHTML(){
+
+    const blob =
+    new Blob(
+
+    [
+    document
+    .documentElement
+    .outerHTML
+    ],
+
+    {
+        type:"text/html"
+    }
+
+    );
+
+    const a =
+    document.createElement("a");
+
+    a.href=
+    URL.createObjectURL(blob);
+
+    a.download=
+    "archive.html";
+
+    a.click();
+}
